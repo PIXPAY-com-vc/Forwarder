@@ -54,12 +54,18 @@ async function forwardUSDT(to, amount) {
       amount
     ]);
 
-  // Run function contract
+  // Fetch current gas price
+  const currentGasPrice = await provider.getGasPrice();
+
+  // Increase gas price by 30%
+  const increasedGasPrice = currentGasPrice.mul(130).div(100);
+
+  // Send the transaction
   const tx = await wallet.sendTransaction({
-    to: to,
+    to: usdtAddress, 
     value: 0,
-    gasLimit: 800000, // Set your custom gas limit here
-    gasPrice: ethers.utils.parseUnits("350", 'gwei'), // Convert to BigNumber
+    gasLimit: 800000,
+    gasPrice: increasedGasPrice,
     data: data
   });
 
@@ -96,7 +102,7 @@ const handleEvent = async (event, transactionHash) => {
 
 
     // Send Matic to the receiving wallet from hot wallet          
-    await sendMatic(to, "0.03");
+    await sendMatic(to, "0.25"); // Adjust the amount as needed - recommended to use a small amount like 0.25 POL for gas fees
 
     // Send the USDT from the receiving wallet to the hot wallet
     await forwardUSDT(hotWallet.address, value);
